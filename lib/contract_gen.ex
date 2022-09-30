@@ -5,6 +5,8 @@ defmodule ContractGen do
   def gen_contract(contract_json_path, module_name) do
     preamble =
       quote do
+        def ensure_no_hex("0x" <> hex), do: Base.decode16!(hex, case: :mixed)
+        def ensure_no_hex(var), do: var
       end
 
     contract_json =
@@ -174,7 +176,4 @@ defmodule ContractGen do
   def to_snake_atom(str) do
     str |> Macro.underscore() |> String.to_atom()
   end
-
-  def ensure_no_hex("0x" <> hex), do: Base.decode16!(hex, case: :mixed)
-  def ensure_no_hex(var), do: var
 end
