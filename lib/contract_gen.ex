@@ -48,7 +48,7 @@ defmodule ContractGen do
         values =
           unquote(args)
           |> Enum.map(fn k -> Keyword.get(binding(), k) end)
-          |> Enum.map(&Stela.Util.ensure_no_hex/1)
+          |> Enum.map(&ensure_no_hex/1)
 
         input =
           unquote(bytecode) <>
@@ -113,7 +113,7 @@ defmodule ContractGen do
         values =
           unquote(args)
           |> Enum.map(fn k -> Keyword.get(binding(), k) end)
-          |> Enum.map(&Stela.Util.ensure_no_hex/1)
+          |> Enum.map(&ensure_no_hex/1)
 
         input = unquote(func_sig) |> ABI.encode(values) |> Base.encode16(case: :lower)
         c = Keyword.get(binding(), :contract)
@@ -131,7 +131,7 @@ defmodule ContractGen do
         values =
           unquote(args)
           |> Enum.map(fn k -> Keyword.get(binding(), k) end)
-          |> Enum.map(&Stela.Util.ensure_no_hex/1)
+          |> Enum.map(&ensure_no_hex/1)
 
         input = unquote(func_sig) |> ABI.encode(values) |> Base.encode16(case: :lower)
         c = Keyword.get(binding(), :contract)
@@ -149,7 +149,7 @@ defmodule ContractGen do
         values =
           unquote(args)
           |> Enum.map(fn k -> Keyword.get(binding(), k) end)
-          |> Enum.map(&Stela.Util.ensure_no_hex/1)
+          |> Enum.map(&ensure_no_hex/1)
 
         input = unquote(func_sig) |> ABI.encode(values) |> Base.encode16(case: :lower)
         c = Keyword.get(binding(), :contract)
@@ -165,13 +165,16 @@ defmodule ContractGen do
 
   ## Examples
 
-    iex> Stela.ContractGen.Helper.to_snake_atom("getApproved")
+    iex> ContractGen.to_snake_atom("getApproved")
     :get_approved
 
-    iex> Stela.ContractGen.Helper.to_snake_atom("approved")
+    iex> ContractGen.to_snake_atom("approved")
     :approved
   """
   def to_snake_atom(str) do
     str |> Macro.underscore() |> String.to_atom()
   end
+
+  def ensure_no_hex("0x" <> hex), do: Base.decode16!(hex, case: :mixed)
+  def ensure_no_hex(var), do: var
 end
